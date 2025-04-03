@@ -33,11 +33,12 @@ const ChatView = () => {
     }
 
     return (
-        <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className="space-y-4">
             <button
                 className="inline-flex items-center px-4 py-2 border border-gray-600 text-gray-600 
                          rounded-lg hover:bg-gray-50 transition-colors duration-200 focus:outline-none 
-                         focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 mb-6"
+                         focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                         cursor-pointer"
                 onClick={newAdventure}
             >
                 <svg
@@ -57,18 +58,16 @@ const ChatView = () => {
                 New Adventure
             </button>
 
-            <div className="space-y-4 mb-8">
-                <p className="text-lg text-gray-700">
-                    You're playing as <span className="font-semibold text-primary">{state.characterName}</span> in...
-                </p>
-                <h2 className="text-5xl font-bold text-gray-900 leading-tight">
-                    "{state.adventureTitle}"
-                </h2>
-            </div>
+            <p className="text-lg text-gray-500 italic">
+                You're playing as <span className="font-semibold text-primary">{state.characterName}</span> in...
+            </p>
+            <h2 className="text-5xl font-bold text-gray-900 leading-tight mb-8">
+                "{state.adventureTitle}"
+            </h2>
 
             <MessageHistory />
 
-            <form className="mt-4" onSubmit={submitInput}>
+            <form onSubmit={submitInput}>
                 <div className="relative">
                     <input
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none 
@@ -81,11 +80,11 @@ const ChatView = () => {
                     />
                     <button
                         type="submit"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 px-4 py-1.5 
+                        className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 
                                  bg-primary text-white rounded-md hover:bg-primary/90 
                                  transition-colors duration-200 focus:outline-none focus:ring-2 
                                  focus:ring-primary focus:ring-offset-2 disabled:opacity-50 
-                                 disabled:cursor-not-allowed"
+                                 cursor-pointer disabled:cursor-not-allowed"
                         disabled={!input.trim()}
                     >
                         Send

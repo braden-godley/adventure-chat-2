@@ -20,7 +20,7 @@ const MessageView: React.FC<{ message: Message, characterName: string }> = ({ me
     const justify = message.role === "assistant" ? "justify-start" : "justify-end";
     return (
         <div className={`flex ${justify}`}>
-            <div className={`${bg} text-white p-4 rounded-lg w-[90%]`}>
+            <div className={`${bg} text-white p-4 rounded-lg w-[80%]`}>
                 {message.role === "assistant" ? "Storyteller:" : `You as ${characterName}:`}
                 <br />
                 "{message.content}"
