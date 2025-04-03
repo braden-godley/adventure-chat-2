@@ -19,7 +19,10 @@ export type Message = {
 export type AppAction =
     | {
           type: "add_message";
-          payload: Message;
+          payload: {
+              user: Message;
+              storyteller: Message;
+          };
       }
     | {
           type: "reset";
@@ -48,7 +51,11 @@ export const reducer = (state: AppState, action: AppAction): AppState => {
         return {
             ...state,
             state: "chat",
-            chatHistory: [action.payload],
+            chatHistory: [
+                ...state.chatHistory,
+                action.payload.user,
+                action.payload.storyteller,
+            ],
         };
     } else if (action.type === "start_adventure") {
         if (state.state === "chat") {

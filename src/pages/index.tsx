@@ -10,7 +10,7 @@ const Home = () => {
     return (
         <AppContext.Provider value={{ state, dispatch }}>
             <Navbar />
-            <div className="container mx-auto">
+            <div className="max-w-4xl mx-auto">
                 {state.state === "home" && <StartAdventureView />}
                 {state.state === "chat" && <ChatView />}
             </div>

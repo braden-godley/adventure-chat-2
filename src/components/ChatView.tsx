@@ -4,6 +4,7 @@ import MessageHistory from "./MessageHistory";
 
 const ChatView = () => {
     const { state, dispatch } = useContext(AppContext);
+    const [input, setInput] = useState("");
 
     if (state.state !== "chat") return;
 
@@ -11,15 +12,86 @@ const ChatView = () => {
         dispatch({ type: "reset" });
     };
 
+    const submitInput = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!input.trim()) return;
+
+        dispatch({
+            type: "add_message",
+            payload: {
+                user: {
+                    role: "user",
+                    content: input,
+                },
+                storyteller: {
+                    role: "assistant",
+                    content: "Thats stupid af!",
+                },
+            }
+        });
+        setInput("");
+    }
+
     return (
-        <div>
-            <button className="px-2 py-1.5 border border-gray-400 rounded" onClick={newAdventure}>
+        <div className="max-w-4xl mx-auto px-4 py-6">
+            <button
+                className="inline-flex items-center px-4 py-2 border border-gray-600 text-gray-600 
+                         rounded-lg hover:bg-gray-50 transition-colors duration-200 focus:outline-none 
+                         focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 mb-6"
+                onClick={newAdventure}
+            >
+                <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    />
+                </svg>
                 New Adventure
             </button>
 
-            <p>You're playing as {state.characterName} in...</p>
-            <h2>{state.adventureTitle}</h2>
-            <MessageHistory history={state.chatHistory} />
+            <div className="space-y-4 mb-8">
+                <p className="text-lg text-gray-700">
+                    You're playing as <span className="font-semibold text-primary">{state.characterName}</span> in...
+                </p>
+                <h2 className="text-5xl font-bold text-gray-900 leading-tight">
+                    "{state.adventureTitle}"
+                </h2>
+            </div>
+
+            <MessageHistory />
+
+            <form className="mt-4" onSubmit={submitInput}>
+                <div className="relative">
+                    <input
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none 
+                                 focus:ring-2 focus:ring-primary focus:border-transparent
+                                 transition-all duration-200 placeholder-gray-400"
+                        type="text"
+                        placeholder="What do you do?"
+                        onChange={(e) => setInput(e.target.value)}
+                        value={input}
+                    />
+                    <button
+                        type="submit"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 px-4 py-1.5 
+                                 bg-primary text-white rounded-md hover:bg-primary/90 
+                                 transition-colors duration-200 focus:outline-none focus:ring-2 
+                                 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 
+                                 disabled:cursor-not-allowed"
+                        disabled={!input.trim()}
+                    >
+                        Send
+                    </button>
+                </div>
+            </form>
         </div>
     );
 };
