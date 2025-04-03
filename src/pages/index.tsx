@@ -1,3 +1,6 @@
+import ChatView from "@/components/ChatView";
+import Navbar from "@/components/Navbar";
+import StartAdventureView from "@/components/StartAdventureView";
 import { AppContext, initialState, reducer } from "@/store";
 import { useReducer } from "react";
 
@@ -6,7 +9,11 @@ const Home = () => {
 
     return (
         <AppContext.Provider value={{ state, dispatch }}>
-            <div></div>
+            <Navbar />
+            <div className="container mx-auto">
+                {state.state === "home" && <StartAdventureView />}
+                {state.state === "chat" && <ChatView />}
+            </div>
         </AppContext.Provider>
     );
 }
