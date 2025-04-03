@@ -1,25 +1,44 @@
 import { AppContext } from "@/store";
+import { useMutation } from "@tanstack/react-query";
 import { useContext, useState } from "react";
 
 const StartAdventureView = () => {
     const [character, setCharacter] = useState("");
     const { state, dispatch } = useContext(AppContext);
 
+    const adventureMutation = useMutation({
+        mutationFn: async (character: string) => {
+            const res = await fetch("/api/adventure", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ characterName: character }),
+            });
+
+            if (!res.ok) return;
+
+            const { adventureTitle, firstMessage } = await res.json();
+            dispatch({
+                type: "start_adventure",
+                payload: {
+                    adventureTitle,
+                    firstMessage: {
+                        role: "assistant",
+                        content: firstMessage,
+                    },
+                    characterName: character,
+                }
+            });
+            return res;
+        },
+    })
+
     const startAdventure = (e: React.FormEvent) => {
         e.preventDefault();
         if (!character.trim()) return;
 
-        dispatch({
-            type: "start_adventure",
-            payload: {
-                adventureTitle: "Your Adventure Begins",
-                firstMessage: {
-                    role: "assistant",
-                    content: `Welcome, ${character}! Let's begin your adventure...`,
-                },
-                characterName: character,
-            }
-        });
+        adventureMutation.mutate(character);
     };
 
     return (
