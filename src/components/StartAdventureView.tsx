@@ -8,7 +8,7 @@ const StartAdventureView = () => {
 
     const adventureMutation = useMutation({
         mutationFn: async (character: string) => {
-            const res = await fetch("/api/adventure", {
+            const res = await fetch("/api/start-adventure", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -16,7 +16,10 @@ const StartAdventureView = () => {
                 body: JSON.stringify({ characterName: character }),
             });
 
-            if (!res.ok) return;
+            if (!res.ok) {
+                const { error } = await res.json();
+                throw new Error(error);
+            }
 
             const { adventureTitle, firstMessage } = await res.json();
             dispatch({
@@ -57,13 +60,20 @@ const StartAdventureView = () => {
 
                 <button
                     type="submit"
-                    className="px-4 py-2 bg-primary text-white
+                    className="px-4 py-2 bg-primary text-white disabled:bg-primary/90
                              rounded-lg hover:bg-primary/90 transition-colors duration-200 focus:outline-none 
                              focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                             cursor-pointer"
+                             cursor-pointer disabled:cursor-not-allowed"
+                    disabled={adventureMutation.isPending}
                 >
-                    Start Adventure
+                    {adventureMutation.isPending ? "Loading..." : "Start Adventure"}
                 </button>
+
+                {adventureMutation.isError && (
+                    <div className="p-4 bg-red-500 text-white rounded-lg">
+                        {adventureMutation.error.message}
+                    </div>
+                )}
             </form>
 
             <div className="bg-secondary text-white p-8 rounded-lg space-y-8">
