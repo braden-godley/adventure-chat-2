@@ -1,10 +1,49 @@
-import { AppContext } from "@/store";
+import { AppContext, Message } from "@/store";
 import { useContext, useState } from "react";
 import MessageHistory from "./MessageHistory";
+import { useMutation } from "@tanstack/react-query";
 
 const ChatView = () => {
     const { state, dispatch } = useContext(AppContext);
     const [input, setInput] = useState("");
+
+    const continueMutation = useMutation({
+        mutationFn: async ({ character, input, history }: { character: string, input: string, history: Array<Message> }) => {
+            const res = await fetch("/api/continue-adventure", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    characterName: character,
+                    chatHistory: history,
+                    prompt: input
+                }),
+            });
+
+            if (!res.ok) {
+                const { error } = await res.json();
+                throw new Error(error);
+            }
+
+            const { responseText } = await res.json();
+            dispatch({
+                type: "add_message",
+                payload: {
+                    user: {
+                        role: "user",
+                        content: input,
+                    },
+                    storyteller: {
+                        role: "assistant",
+                        content: responseText,
+                    },
+                }
+            });
+            setInput("");
+            return res;
+        },
+    })
 
     if (state.state !== "chat") return;
 
@@ -16,20 +55,11 @@ const ChatView = () => {
         e.preventDefault();
         if (!input.trim()) return;
 
-        dispatch({
-            type: "add_message",
-            payload: {
-                user: {
-                    role: "user",
-                    content: input,
-                },
-                storyteller: {
-                    role: "assistant",
-                    content: "Thats stupid af!",
-                },
-            }
-        });
-        setInput("");
+        continueMutation.mutate({
+            character: state.characterName,
+            history: state.chatHistory,
+            input: input,
+        })
     }
 
     return (
