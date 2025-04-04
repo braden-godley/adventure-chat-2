@@ -1,10 +1,26 @@
 import { AppContext, Message } from "@/store";
-import { useContext } from "react";
+import { useContext, useRef, useEffect } from "react";
 import MessageHistory from "./MessageHistory";
 import { useMutation } from "@tanstack/react-query";
+import AutoResizingTextarea from "./AutoResizingTextarea";
 
 const ChatView = () => {
     const { state, dispatch } = useContext(AppContext);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    const adjustTextareaHeight = () => {
+        const textarea = textareaRef.current;
+        if (textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
+        }
+    };
+
+    useEffect(() => {
+        if (state.state === "chat") {
+            adjustTextareaHeight();
+        }
+    }, [state.state === "chat" ? state.prompt : null]);
 
     const continueMutation = useMutation({
         mutationFn: async ({ character, history, prompt }: { character: string, history: Array<Message>, prompt: string }) => {
@@ -56,7 +72,6 @@ const ChatView = () => {
     };
 
     const handleRetry = () => {
-        console.log(state.chatHistory[state.chatHistory.length - 2].content);
         setPrompt(state.chatHistory[state.chatHistory.length - 2].content);
 
         dispatch({ type: "retry", payload: { lastMessageIndex: state.chatHistory.length - 2 } });
@@ -111,14 +126,21 @@ const ChatView = () => {
             {state.outcome === "CONTINUE" ? (
                 <form onSubmit={submitInput}>
                     <div className="relative">
-                        <input
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none 
+                        <AutoResizingTextarea
+                            className="w-full px-4 py-3 pr-24 border border-gray-300 rounded-lg focus:outline-none 
                                      focus:ring-2 focus:ring-primary focus:border-transparent
                                      transition-all duration-200 placeholder-gray-400"
-                            type="text"
                             placeholder="What do you do?"
-                            onChange={(e) => setPrompt(e.target.value)}
                             value={state.prompt}
+                            onChange={setPrompt}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    if (state.prompt.trim() && !continueMutation.isPending) {
+                                        submitInput(e);
+                                    }
+                                }
+                            }}
                         />
                         <button
                             type="submit"
@@ -127,7 +149,7 @@ const ChatView = () => {
                                      transition-colors duration-200 focus:outline-none focus:ring-2 
                                      focus:ring-primary focus:ring-offset-2 disabled:opacity-50 
                                      cursor-pointer disabled:cursor-not-allowed"
-                            disabled={!state.prompt.trim()}
+                            disabled={!state.prompt.trim() || continueMutation.isPending}
                         >
                             Send
                         </button>
