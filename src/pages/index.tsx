@@ -13,10 +13,12 @@ const Home = () => {
     return (
         <QueryClientProvider client={queryClient}>
             <AppContext.Provider value={{ state, dispatch }}>
-                <Navbar />
-                <div className="max-w-4xl mx-auto py-8 px-4">
-                    {state.state === "home" && <StartAdventureView />}
-                    {state.state === "chat" && <ChatView />}
+                <div className="flex flex-col h-screen">
+                    <Navbar />
+                    <div className="max-w-4xl mx-auto py-8 px-4 flex-1">
+                        {state.state === "home" && <StartAdventureView />}
+                        {state.state === "chat" && <ChatView />}
+                    </div>
                 </div>
             </AppContext.Provider>
         </QueryClientProvider>
