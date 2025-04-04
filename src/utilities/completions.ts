@@ -18,7 +18,6 @@ export const generateContent = async (
     if (model === "gpt-4o-mini") {
         // const apiKey = process.env.OPENAI_API_KEY;
         // const client = new OpenAI({ apiKey });
-
         // const gptResponse = await client.responses.create({
         //     model: "gpt-4o-mini",
         //     instructions: instructions,
@@ -27,14 +26,13 @@ export const generateContent = async (
         //         content: part.content,
         //     })),
         // });
-
         // response = gptResponse.output_text;
     } else if (model === "gemini-2.0-flash") {
         // Gemini
         const apiKey = process.env.GEMINI_API_KEY!;
         const client = new GoogleGenAI({ apiKey });
         const geminiResponse = await client.models.generateContent({
-            model: "gemini-2.5-pro-exp-03-25",
+            model: "gemini-2.0-flash",
             contents: prompt.map((part) => ({
                 role: part.role === "user" ? "user" : "model",
                 parts: [{ text: part.content }],
