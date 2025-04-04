@@ -34,9 +34,9 @@ export const generateContent = async (
         const apiKey = process.env.GEMINI_API_KEY!;
         const client = new GoogleGenAI({ apiKey });
         const geminiResponse = await client.models.generateContent({
-            model: "gemini-2.0-flash",
+            model: "gemini-2.5-pro-exp-03-25",
             contents: prompt.map((part) => ({
-                role: part.role,
+                role: part.role === "user" ? "user" : "model",
                 parts: [{ text: part.content }],
             })),
             config: {

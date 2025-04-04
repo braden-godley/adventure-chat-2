@@ -52,6 +52,8 @@ export default async function handler(
         "You are an expert storyteller",
     );
 
+    console.log(generatedContent);
+
     const { narration, outcome } = parseResponse(generatedContent);
 
     return res.status(200).json({
@@ -84,7 +86,7 @@ const generatePrompt = (
 </formatting>
 <output_example>
     <narration>Your narration of what happens goes here. For defeats, be explicit: "You fall into the endless void, your quest forever unfulfilled. Your story ends here, lost to the darkness."</narration>
-    <outcome>CONTINUE</outcome>
+    <outcome>DEFEATED</outcome>
 </output_example>
 <players_response>
     ${playersResponse}

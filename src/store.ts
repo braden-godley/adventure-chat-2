@@ -10,6 +10,7 @@ export type AppState =
           characterName: string;
           chatHistory: Array<Message>;
           outcome: "DEFEATED" | "CONTINUE" | "VICTORY";
+          prompt: string;
       };
 
 export type Message = {
@@ -31,6 +32,9 @@ export type AppAction =
       }
     | {
           type: "retry";
+          payload: {
+            lastMessageIndex: number,
+          }
       }
     | {
           type: "start_adventure";
@@ -39,7 +43,14 @@ export type AppAction =
               firstMessage: Message;
               characterName: string;
           };
+      }
+      | {
+          type: "set_prompt";
+          payload: {
+              prompt: string;
+          };
       };
+
 
 export const initialState: AppState = {
     state: "home",
@@ -54,7 +65,8 @@ export const reducer = (state: AppState, action: AppAction): AppState => {
         }
         return {
             ...state,
-            chatHistory: state.chatHistory.slice(0, -2), // Remove last two messages
+            chatHistory: state.chatHistory.slice(0, action.payload.lastMessageIndex), // Remove last two messages
+            prompt: state.chatHistory[action.payload.lastMessageIndex].content,
             outcome: "CONTINUE"
         };
     } else if (action.type === "add_message") {
@@ -83,6 +95,15 @@ export const reducer = (state: AppState, action: AppAction): AppState => {
             characterName: action.payload.characterName,
             chatHistory: [action.payload.firstMessage],
             outcome: "CONTINUE",
+            prompt: "",
+        };
+    } else if (action.type === "set_prompt") {
+        if (state.state !== "chat") {
+            return state;
+        }
+        return {
+            ...state,
+            prompt: action.payload.prompt,
         };
     }
     return state;

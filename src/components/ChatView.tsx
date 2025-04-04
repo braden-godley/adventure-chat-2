@@ -1,14 +1,13 @@
 import { AppContext, Message } from "@/store";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import MessageHistory from "./MessageHistory";
 import { useMutation } from "@tanstack/react-query";
 
 const ChatView = () => {
     const { state, dispatch } = useContext(AppContext);
-    const [input, setInput] = useState("");
 
     const continueMutation = useMutation({
-        mutationFn: async ({ character, input, history }: { character: string, input: string, history: Array<Message> }) => {
+        mutationFn: async ({ character, history, prompt }: { character: string, history: Array<Message>, prompt: string }) => {
             const res = await fetch("/api/continue-adventure", {
                 method: "POST",
                 headers: {
@@ -17,7 +16,7 @@ const ChatView = () => {
                 body: JSON.stringify({
                     characterName: character,
                     chatHistory: history,
-                    prompt: input
+                    prompt: prompt
                 }),
             });
 
@@ -32,7 +31,7 @@ const ChatView = () => {
                 payload: {
                     user: {
                         role: "user",
-                        content: input,
+                        content: prompt,
                     },
                     storyteller: {
                         role: "assistant",
@@ -41,12 +40,16 @@ const ChatView = () => {
                     outcome,
                 }
             });
-            setInput("");
+            setPrompt("");
             return res;
         },
     })
 
     if (state.state !== "chat") return;
+
+    const setPrompt = (prompt: string) => {
+        dispatch({ type: "set_prompt", payload: { prompt: prompt } });
+    };
 
     const newAdventure = () => {
         dispatch({ type: "reset" });
@@ -54,19 +57,19 @@ const ChatView = () => {
 
     const handleRetry = () => {
         console.log(state.chatHistory[state.chatHistory.length - 2].content);
-        setInput(state.chatHistory[state.chatHistory.length - 2].content);
+        setPrompt(state.chatHistory[state.chatHistory.length - 2].content);
 
-        dispatch({ type: "retry" });
+        dispatch({ type: "retry", payload: { lastMessageIndex: state.chatHistory.length - 2 } });
     };
 
     const submitInput = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!input.trim()) return;
+        if (!state.prompt.trim()) return;
 
         continueMutation.mutate({
             character: state.characterName,
             history: state.chatHistory,
-            input: input,
+            prompt: state.prompt,
         })
     }
 
@@ -114,8 +117,8 @@ const ChatView = () => {
                                      transition-all duration-200 placeholder-gray-400"
                             type="text"
                             placeholder="What do you do?"
-                            onChange={(e) => setInput(e.target.value)}
-                            value={input}
+                            onChange={(e) => setPrompt(e.target.value)}
+                            value={state.prompt}
                         />
                         <button
                             type="submit"
@@ -124,7 +127,7 @@ const ChatView = () => {
                                      transition-colors duration-200 focus:outline-none focus:ring-2 
                                      focus:ring-primary focus:ring-offset-2 disabled:opacity-50 
                                      cursor-pointer disabled:cursor-not-allowed"
-                            disabled={!input.trim()}
+                            disabled={!state.prompt.trim()}
                         >
                             Send
                         </button>
