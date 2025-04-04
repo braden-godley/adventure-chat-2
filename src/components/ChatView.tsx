@@ -53,6 +53,9 @@ const ChatView = () => {
     };
 
     const handleRetry = () => {
+        console.log(state.chatHistory[state.chatHistory.length - 2].content);
+        setInput(state.chatHistory[state.chatHistory.length - 2].content);
+
         dispatch({ type: "retry" });
     };
 
