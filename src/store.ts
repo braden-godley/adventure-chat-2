@@ -9,6 +9,7 @@ export type AppState =
           adventureTitle: string;
           characterName: string;
           chatHistory: Array<Message>;
+          outcome: "DEFEATED" | "CONTINUE" | "VICTORY";
       };
 
 export type Message = {
@@ -22,6 +23,7 @@ export type AppAction =
           payload: {
               user: Message;
               storyteller: Message;
+              outcome: "DEFEATED" | "CONTINUE" | "VICTORY";
           };
       }
     | {
@@ -56,6 +58,7 @@ export const reducer = (state: AppState, action: AppAction): AppState => {
                 action.payload.user,
                 action.payload.storyteller,
             ],
+            outcome: action.payload.outcome,
         };
     } else if (action.type === "start_adventure") {
         if (state.state === "chat") {
@@ -67,6 +70,7 @@ export const reducer = (state: AppState, action: AppAction): AppState => {
             adventureTitle: action.payload.adventureTitle,
             characterName: action.payload.characterName,
             chatHistory: [action.payload.firstMessage],
+            outcome: "CONTINUE",
         };
     }
     return state;

@@ -26,7 +26,7 @@ const ChatView = () => {
                 throw new Error(error);
             }
 
-            const { responseText } = await res.json();
+            const { responseText, outcome } = await res.json();
             dispatch({
                 type: "add_message",
                 payload: {
@@ -38,6 +38,7 @@ const ChatView = () => {
                         role: "assistant",
                         content: responseText,
                     },
+                    outcome,
                 }
             });
             setInput("");
@@ -97,30 +98,42 @@ const ChatView = () => {
 
             <MessageHistory />
 
-            <form onSubmit={submitInput}>
-                <div className="relative">
-                    <input
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none 
-                                 focus:ring-2 focus:ring-primary focus:border-transparent
-                                 transition-all duration-200 placeholder-gray-400"
-                        type="text"
-                        placeholder="What do you do?"
-                        onChange={(e) => setInput(e.target.value)}
-                        value={input}
-                    />
-                    <button
-                        type="submit"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 
-                                 bg-primary text-white rounded-md hover:bg-primary/90 
-                                 transition-colors duration-200 focus:outline-none focus:ring-2 
-                                 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 
-                                 cursor-pointer disabled:cursor-not-allowed"
-                        disabled={!input.trim()}
-                    >
-                        Send
-                    </button>
+            {state.outcome === "CONTINUE" ? (
+                <form onSubmit={submitInput}>
+                    <div className="relative">
+                        <input
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none 
+                                     focus:ring-2 focus:ring-primary focus:border-transparent
+                                     transition-all duration-200 placeholder-gray-400"
+                            type="text"
+                            placeholder="What do you do?"
+                            onChange={(e) => setInput(e.target.value)}
+                            value={input}
+                        />
+                        <button
+                            type="submit"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 
+                                     bg-primary text-white rounded-md hover:bg-primary/90 
+                                     transition-colors duration-200 focus:outline-none focus:ring-2 
+                                     focus:ring-primary focus:ring-offset-2 disabled:opacity-50 
+                                     cursor-pointer disabled:cursor-not-allowed"
+                            disabled={!input.trim()}
+                        >
+                            Send
+                        </button>
+                    </div>
+                </form>
+            ) : (
+                <div className="text-center py-8">
+                    <h3 className="text-4xl font-bold">
+                        {state.outcome === "VICTORY" ? (
+                            <span className="text-green-600">You Are Victorious!</span>
+                        ) : (
+                            <span className="text-red-600">You've Been Defeated!</span>
+                        )}
+                    </h3>
                 </div>
-            </form>
+            )}
         </div>
     );
 };
