@@ -56,7 +56,7 @@ const generatePrompt = (characterName: string): string => {
     return `
 <task>
     Generate an amazing story title and premise based on the character name given. 
-    Your story premise should be interesting and invite further action, asking what they will do next.
+    Your story premise should be 4-5 sentences in length and invite further action, asking what they will do next.
 </task>
 <context>
     <character_name>${characterName}</character_name>

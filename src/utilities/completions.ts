@@ -4,7 +4,7 @@ import OpenAI from "openai";
 type ModelType = "gpt-4o-mini" | "gemini-2.0-flash";
 
 type Context = Array<{
-    role: "user" | "assistant" | "developer";
+    role: string;
     content: string;
 }>;
 
