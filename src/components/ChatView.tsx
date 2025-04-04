@@ -52,6 +52,10 @@ const ChatView = () => {
         dispatch({ type: "reset" });
     };
 
+    const handleRetry = () => {
+        dispatch({ type: "retry" });
+    };
+
     const submitInput = (e: React.FormEvent) => {
         e.preventDefault();
         if (!input.trim()) return;
@@ -132,6 +136,16 @@ const ChatView = () => {
                             <span className="text-red-600">You've Been Defeated!</span>
                         )}
                     </h3>
+                    {state.outcome === "DEFEATED" && (
+                        <button
+                            onClick={handleRetry}
+                            className="mt-4 px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 
+                                     transition-colors duration-200 focus:outline-none focus:ring-2 
+                                     focus:ring-primary focus:ring-offset-2"
+                        >
+                            Retry
+                        </button>
+                    )}
                 </div>
             )}
         </div>

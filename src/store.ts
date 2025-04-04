@@ -30,6 +30,9 @@ export type AppAction =
           type: "reset";
       }
     | {
+          type: "retry";
+      }
+    | {
           type: "start_adventure";
           payload: {
               adventureTitle: string;
@@ -45,6 +48,15 @@ export const initialState: AppState = {
 export const reducer = (state: AppState, action: AppAction): AppState => {
     if (action.type === "reset") {
         return initialState;
+    } else if (action.type === "retry") {
+        if (state.state !== "chat") {
+            return state;
+        }
+        return {
+            ...state,
+            chatHistory: state.chatHistory.slice(0, -2), // Remove last two messages
+            outcome: "CONTINUE"
+        };
     } else if (action.type === "add_message") {
         if (state.state !== "chat") {
             return state;
