@@ -16,19 +16,19 @@ export const generateContent = async (
     let response = "";
 
     if (model === "gpt-4o-mini") {
-        const apiKey = process.env.OPENAI_API_KEY;
-        const client = new OpenAI({ apiKey });
+        // const apiKey = process.env.OPENAI_API_KEY;
+        // const client = new OpenAI({ apiKey });
 
-        const gptResponse = await client.responses.create({
-            model: "gpt-4o-mini",
-            instructions: instructions,
-            input: prompt.map((part) => ({
-                role: part.role,
-                content: part.content,
-            })),
-        });
+        // const gptResponse = await client.responses.create({
+        //     model: "gpt-4o-mini",
+        //     instructions: instructions,
+        //     input: prompt.map((part) => ({
+        //         role: part.role,
+        //         content: part.content,
+        //     })),
+        // });
 
-        response = gptResponse.output_text;
+        // response = gptResponse.output_text;
     } else if (model === "gemini-2.0-flash") {
         // Gemini
         const apiKey = process.env.GEMINI_API_KEY!;
